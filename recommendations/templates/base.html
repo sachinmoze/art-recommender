@@ -100,6 +100,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'ranking_recommendations' %}">Ranking Recommendations</a>
                     </li>
+                    {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'conversational_recommendations' %}">Conversational Recommendations</a>
                     </li>
@@ -109,6 +110,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'artist_recommendations' %}">Artist Recommendations</a>
                     </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'popular_artworks' %}">Popular Artworks</a>
                     </li>
