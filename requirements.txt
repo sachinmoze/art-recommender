@@ -14,10 +14,12 @@ Django==5.0.7
 dnspython==2.6.1
 eventlet==0.36.1
 greenlet==3.0.3
+gunicorn==22.0.0
 idna==3.7
 joblib==1.4.2
 kombu==5.3.7
 numpy==2.0.1
+packaging==24.1
 pandas==2.2.2
 prompt_toolkit==3.0.47
 python-dateutil==2.9.0.post0
