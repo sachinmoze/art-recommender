@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Recommended Artworks</h2>
+
+<div class="row">
+    <h3>Content-Based Recommendations</h3>
+    {% for rec in content_based_recommendations %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <img src="{{ rec.image_url }}" class="card-img-top" alt="{{ rec.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ rec.title }}</h5>
+                <p class="card-text">{{ rec.artist_display }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row">
+    <h3>Collaborative Recommendations</h3>
+    {% for rec in collaborative_recommendations %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <img src="{{ rec.image_url }}" class="card-img-top" alt="{{ rec.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ rec.title }}</h5>
+                <p class="card-text">{{ rec.artist_display }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row">
+    <h3>Demographic Recommendations</h3>
+    {% for rec in demographic_recommendations %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <img src="{{ rec.image_url }}" class="card-img-top" alt="{{ rec.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ rec.title }}</h5>
+                <p class="card-text">{{ rec.artist_display }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row">
+    <h3>Knowledge-Based Recommendations</h3>
+    {% for rec in knowledge_based_recommendations %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <img src="{{ rec.image_url }}" class="card-img-top" alt="{{ rec.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ rec.title }}</h5>
+                <p class="card-text">{{ rec.artist_display }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row">
+    <h3>Ensemble Recommendations</h3>
+    {% for rec in ensemble_recommendations %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <img src="{{ rec.image_url }}" class="card-img-top" alt="{{ rec.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ rec.title }}</h5>
+                <p class="card-text">{{ rec.artist_display }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<h2>Recommended Exhibitions</h2>
+<ul>
+    {% for exhibition in content_based_exhibition_recommendations %}
+        <li>{{ exhibition.title }}</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

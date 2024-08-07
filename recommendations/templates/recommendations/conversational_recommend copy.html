@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Conversational Recommendations</h2>
+
+<form method="post" class="mb-4">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="artwork_id">Artwork ID</label>
+        <input type="text" class="form-control" id="artwork_id" name="artwork_id" required>
+    </div>
+    <div class="form-group">
+        <label for="interaction_type">Interaction Type</label>
+        <select class="form-control" id="interaction_type" name="interaction_type">
+            <option value="view">View</option>
+            <option value="like">Like</option>
+            <option value="share">Share</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
+
+<div class="row">
+    <h3>Updated Recommendations</h3>
+    {% for rec in recommendations %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <img src="{{ rec.image_url }}" class="card-img-top" alt="{{ rec.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ rec.title }}</h5>
+                <p class="card-text">{{ rec.artist_display }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

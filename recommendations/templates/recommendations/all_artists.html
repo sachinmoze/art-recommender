@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}All Artists{% endblock %}
+
+{% block content %}
+<h2>All Artists</h2>
+<div class="row">
+    {% for artist in artists %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ artist.name }}</h5>
+                {% if artist.description %}
+                <p class="card-text">{{ artist.description|safe }}</p>
+                {% endif %}
+                {% if artist.birth_date %}
+                <p class="card-text">Born: {{ artist.birth_date }}</p>
+                {% endif %}
+
+                {% if artist.death_date %}
+                <p class="card-text">Died: {{ artist.death_date }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

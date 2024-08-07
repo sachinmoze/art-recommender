@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}All Artworks{% endblock %}
+
+{% block content %}
+<h2>All Artworks</h2>
+<div class="row">
+    {% for artwork in artworks %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <img src="{{ artwork.image_url }}" class="card-img-top" alt="{{ artwork.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ artwork.title }}</h5>
+                <p class="card-text">{{ artwork.artist_display }}</p>
+                <a href="{% url 'recommend' artwork.id %}" class="btn btn-primary">Get Recommendations</a>
+                <button onclick="viewArtwork({{ artwork.id }})">View</button>
+                <button onclick="likeArtwork({{ artwork.id }})" id="like-{{ artwork.id }}">Like</button>
+                <button onclick="shareArtwork({{ artwork.id }})">Share</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+
+<div class="modal fade" id="artworkModal" tabindex="-1" aria-labelledby="artworkModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="artworkModalLabel">Artwork Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="artworkModalBody">
+          <!-- loading content dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function viewArtwork(artworkId) {
+        fetch(`/api/artworks/${artworkId}/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('artworkModalLabel').innerText = data.title;
+            document.getElementById('artworkModalBody').innerHTML = `
+                <img src="${data.image_url}" alt="${data.title}" style="width: 100%; height: auto;">
+                <p><strong>Artist:</strong> ${data.artist_display}</p>
+                <p><strong>Medium:</strong> ${data.medium_display}</p>
+                <p><strong>Description:</strong> ${data.text_info}</p>
+            `;
+            new bootstrap.Modal(document.getElementById('artworkModal')).show();
+            recordInteraction(artworkId, 'view');
+        });
+    }
+    
+    function likeArtwork(artworkId) {
+        recordInteraction(artworkId, 'like');
+        const likeButton = document.getElementById(`like-${artworkId}`);
+        if (likeButton.classList.contains('liked')) {
+            likeButton.classList.remove('liked');
+            likeButton.style.color = '';
+            likeButton.innerText = 'Like';
+        } else {
+            likeButton.classList.add('liked');
+            likeButton.style.color = 'red';
+            likeButton.innerText = 'Liked';
+        }
+    }
+    
+    function shareArtwork(artworkId) {
+        const shareUrl = `${window.location.origin}/artworks/${artworkId}/`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            recordInteraction(artworkId, 'share');
+            alert('Artwork link has been copied to clipboard!');
+        }).catch(err => {
+            console.error('Error copying to clipboard: ', err);
+        });
+    }
+    
+    function recordInteraction(artworkId, interactionType) {
+        fetch("{% url 'conversational_recommendations_api' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                'artwork_id': artworkId,
+                'interaction_type': interactionType
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status !== 'success') {
+                console.error('Error recording interaction');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+    </script>
+
+
+{% endblock %}

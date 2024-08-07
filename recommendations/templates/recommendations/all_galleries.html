@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}All Galleries{% endblock %}
+
+{% block content %}
+<h2>All Galleries</h2>
+<div class="row">
+    {% for gallery in galleries %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ gallery.title }}</h5>
+                <p class="card-text">Location: {{ gallery.floor }}</p>
+                <p class="card-text">Latitude: {{gallery.latitude}}, Longitude: {{gallery.longitude}}</p>
+
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

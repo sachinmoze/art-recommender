@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}All Artworks{% endblock %}
+
+{% block content %}
+<h2>All Exhibitions</h2>
+<div class="row">
+    {% for exhibition in exhibitions %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <img src="{{ exhibition.image_url }}" class="card-img-top" alt="{{ exhibition.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ exhibition.title }}</h5>
+                <p class="card-text">{{ exhibition.short_description|safe }}</p>
+                <a href="{{ exhibition.web_url }}" class="btn btn-primary">More Info</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

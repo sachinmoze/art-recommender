@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Recommended Artists</h2>
+<div class="row">
+    {% for artist in artists %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ artist.name }}</h5>
+                <p class="card-text">{{ artist.description }}</p>
+                <p class="card-text">Born: {{ artist.birth_date }}</p>
+                <p class="card-text">Died: {{ artist.death_date }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

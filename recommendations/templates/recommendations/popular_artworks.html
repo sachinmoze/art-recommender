@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Popular Artworks</h2>
+<div class="row">
+    {% for artwork in artworks %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <img src="{{ artwork.image_url }}" class="card-img-top" alt="{{ artwork.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ artwork.title }}</h5>
+                <p class="card-text">{{ artwork.artist_display }}</p>
+                <p class="card-text">Interactions: {{ artwork.interaction_count }}</p>
+                <a href="{% url 'recommend' artwork.id %}" class="btn btn-primary">Get Recommendations</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Conversational Recommendations</h2>
+
+<!-- <form method="post" class="mb-4">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="artwork_id">Artwork ID</label>
+        <input type="text" class="form-control" id="artwork_id" name="artwork_id" required>
+    </div>
+    <div class="form-group">
+        <label for="interaction_type">Interaction Type</label>
+        <select class="form-control" id="interaction_type" name="interaction_type">
+            <option value="view">View</option>
+            <option value="like">Like</option>
+            <option value="share">Share</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form> -->
+
+
+<div class="row" id="recommendations-container">
+    <h4>Updated recommendations</h4>
+    {% for rec in recommendations %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <img src="{{ rec.image_url }}" class="card-img-top" alt="{{ rec.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ rec.title }}</h5>
+                <p class="card-text">{{ rec.artist_display }}</p>
+                <button onclick="viewArtwork({{ rec.id }})">View</button>
+                <button onclick="likeArtwork({{ rec.id }})" id="like-{{ rec.id }}">Like</button>
+                <button onclick="shareArtwork({{ rec.id }})">Share</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- <h3>Updated Exhibitions</h3> -->
+<div class="row" id="updated-exhibitions-container"></div>
+
+<!-- <h3>Updated Recommendations</h3> -->
+<div class="row" id="updated-recommendations-container"></div>
+
+
+
+<!-- <div class="row">
+    <h3>Recommendations</h3>
+    {% for rec in upd_recommendations %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <img src="{{ rec.image_url }}" class="card-img-top" alt="{{ rec.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ rec.title }}</h5>
+                <p class="card-text">{{ rec.artist_display }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div> -->
+<div class="modal fade" id="artworkModal" tabindex="-1" aria-labelledby="artworkModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="artworkModalLabel">Artwork Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="artworkModalBody">
+          <!-- loading content dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function viewArtwork(artworkId) {
+        fetch(`/api/artworks/${artworkId}/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('artworkModalLabel').innerText = data.title;
+            document.getElementById('artworkModalBody').innerHTML = `
+                <img src="${data.image_url}" alt="${data.title}" style="width: 100%; height: auto;">
+                <p><strong>Artist:</strong> ${data.artist_display}</p>
+                <p><strong>Medium:</strong> ${data.medium_display}</p>
+                <p><strong>Description:</strong> ${data.text_info}</p>
+            `;
+            new bootstrap.Modal(document.getElementById('artworkModal')).show();
+            recordInteraction(artworkId, 'view');
+        });
+    }
+    
+    function likeArtwork(artworkId) {
+        recordInteraction(artworkId, 'like');
+        const likeButton = document.getElementById(`like-${artworkId}`);
+        if (likeButton.classList.contains('liked')) {
+            likeButton.classList.remove('liked');
+            likeButton.style.color = '';
+            likeButton.innerText = 'Like';
+        } else {
+            likeButton.classList.add('liked');
+            likeButton.style.color = 'red';
+            likeButton.innerText = 'Liked';
+        }
+    }
+    
+    function shareArtwork(artworkId) {
+        const shareUrl = `${window.location.origin}/artworks/${artworkId}/`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            recordInteraction(artworkId, 'share');
+            alert('Artwork link has been copied to clipboard!');
+        }).catch(err => {
+            console.error('Error copying to clipboard: ', err);
+        });
+    }
+    
+    function recordInteraction(artworkId, interactionType) {
+        fetch("{% url 'conversational_recommendations' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                'artwork_id': artworkId,
+                'interaction_type': interactionType
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                console.log('Interaction recorded successfully');
+                updateRecommendations(data.artworks, data.exhibitions);
+            } else {
+                console.error('Error recording interaction');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+    
+    function updateRecommendations(artworks, exhibitions) {
+        const artworkContainer = document.getElementById('updated-recommendations-container');
+        const exhibitionContainer = document.getElementById('updated-exhibitions-container');
+
+        artworkContainer.innerHTML = '<h3>Suggested Recommendations</h3>';
+        exhibitionContainer.innerHTML = '<h3>Suggested Exhibitions</h3>';
+
+        artworks.forEach(artwork => {
+            const artworkCard = `
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <img src="${artwork.image_url}" class="card-img-top" alt="${artwork.title}">
+                        <div class="card-body">
+                            <h5 class="card-title">${artwork.title}</h5>
+                            <p class="card-text">${artwork.artist_display}</p>
+                            <button onclick="viewArtwork(${artwork.id})">View</button>
+                            <button onclick="likeArtwork(${artwork.id})" id="like-${artwork.id}">Like</button>
+                            <button onclick="shareArtwork(${artwork.id})">Share</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            artworkContainer.insertAdjacentHTML('beforeend', artworkCard);
+        });
+
+        exhibitions.forEach(exhibition => {
+            const exhibitionCard = `
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <img src="${exhibition.image_url}" class="card-img-top" alt="${exhibition.title}">
+                        <div class="card-body">
+                            <h5 class="card-title">${exhibition.title}</h5>
+                            <p class="card-text">${exhibition.short_description}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            exhibitionContainer.insertAdjacentHTML('beforeend', exhibitionCard);
+        });
+    }
+</script>
+
+
+
+{% endblock %}
